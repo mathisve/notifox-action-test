@@ -1,0 +1,51 @@
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 'stable'
+          cache: true
+
+      - name: Run tests
+        run: go test -v ./...
+
+      - name: Build executable
+        run: go build -o fib .
+
+      - name: Notify
+        uses: notifoxhq/action@v1
+        with:
+          audience: mathis
+          channel: email
+          message: |
+            Build succeeded
+            Repo: ${{ github.repository }}
+            Branch: ${{ github.ref_name }}
+            Commit: ${{ github.sha }}
+            Author: ${{ github.actor }}
+            Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        env:
+          NOTIFOX_API_KEY: ${{ secrets.NOTIFOX_API_KEY }}
+      
+      - name: Notify on failure
+        if: failure()
+        uses: notifoxhq/action@v1
+        with:
+          audience: ops
+          channel: sms
+          message: |
+            Build failed
+            Repo: ${{ github.repository }}
+            Branch: ${{ github.ref_name }}
+            Commit: ${{ github.sha }}
+            Author: ${{ github.actor }}
+            Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        env:
+          NOTIFOX_API_KEY: ${{ secrets.NOTIFOX_API_KEY }}
