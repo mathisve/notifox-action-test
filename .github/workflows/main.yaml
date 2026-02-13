@@ -38,8 +38,8 @@ jobs:
         if: failure()
         uses: notifoxhq/action@v1
         with:
-          audience: ops
-          channel: sms
+          audience: mathis
+          channel: email
           message: |
             Build failed
             Repo: ${{ github.repository }}
