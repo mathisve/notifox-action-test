@@ -21,7 +21,7 @@ func main() {
 }
 
 func fib(n int) *big.Int {
-	if n < 2 {
+	if n < 3 {
 		return big.NewInt(int64(n))
 	}
 
